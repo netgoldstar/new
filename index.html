@@ -81,14 +81,16 @@
         document.addEventListener("DOMContentLoaded", function() {
             const CHECK_FLAG = "user_region_checked"; // 标记 key
 
-            // 如果 localStorage 里已存储标记，则不再检查，防止重复请求
-            if (localStorage.getItem(CHECK_FLAG) === "CN") {
-                console.log("用户已被识别为中国区，页面不再请求 API。");
-                return;
+            // 先检查 localStorage 里是否已经保存了状态，避免重复请求
+            let storedRegion = localStorage.getItem(CHECK_FLAG);
+
+            if (storedRegion === "CN") {
+                console.log("用户已识别为中国区，停止检测。");
+                return; // 直接返回，不请求 API
             }
 
-            if (localStorage.getItem(CHECK_FLAG) === "NON_CN") {
-                console.log("用户已被识别为非中国区，页面不再请求 API。");
+            if (storedRegion === "NON_CN") {
+                console.log("用户已识别为非中国区，直接跳转。");
                 window.location.replace("https://www.netgoldstar.com");
                 return;
             }
@@ -117,8 +119,8 @@
                     }
                 })
                 .catch(error => {
-                    console.error("IP 检测失败，保持当前页面:", error);
-                    // 不再默认标记为中国区，避免无限刷新
+                    console.error("IP 检测失败，默认用户为中国区:", error);
+                    localStorage.setItem(CHECK_FLAG, "CN"); // 默认中国区，防止无限请求
                 });
         });
     </script>
