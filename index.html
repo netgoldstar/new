@@ -117,8 +117,8 @@
                     }
                 })
                 .catch(error => {
-                    console.error("IP 检测失败，显示当前页面:", error);
-                    localStorage.setItem(CHECK_FLAG, "CN"); // 默认中国区，防止无限请求
+                    console.error("IP 检测失败，保持当前页面:", error);
+                    // 不再默认标记为中国区，避免无限刷新
                 });
         });
     </script>
