@@ -69,7 +69,7 @@
     </style>
     <script>
         // 通过 API 获取用户的 IP 归属地
-        fetch("https://ip-api.com/json/")
+        fetch("https://ipwhois.app/json/")
             .then(response => {
                 if (!response.ok) {
                     throw new Error("网络请求失败");
@@ -78,9 +78,9 @@
             })
             .then(data => {
                 console.log("IP 归属地检测成功:", data);
-                if (data && data.countryCode === "CN") {
+                if (data && data.country_code === "CN") {
                     console.log("用户位于中国，显示当前页面。");
-                } else if (data && data.countryCode) {
+                } else if (data && data.country_code) {
                     console.log("用户不在中国，跳转到 www.netgoldstar.com");
                     window.location.href = "https://www.netgoldstar.com";
                 }
