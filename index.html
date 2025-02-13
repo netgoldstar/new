@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NetStar官网地址，防止失联，请收藏本页。">
+    <meta name="description" content="NetStar官网最新地址，防止失联，请收藏本页。">
     <title>NetStar - 官网地址</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
@@ -54,6 +54,7 @@
             text-decoration: underline;
             color: #0c5bd1;
         }
+        /* 响应式适配小屏幕 */
         @media (max-width: 600px) {
             .container {
                 padding: 15px 20px;
@@ -66,6 +67,21 @@
             }
         }
     </style>
+    <script>
+        // 通过 API 获取用户的 IP 归属地
+        fetch("http://ip-api.com/json/")
+            .then(response => response.json())
+            .then(data => {
+                if (data.countryCode !== "CN") {
+                    // 如果用户不在中国，则跳转
+                    window.location.href = "https://www.netgoldstar.com";
+                }
+            })
+            .catch(error => {
+                console.error("IP 检测失败，显示当前页面:", error);
+                // API 失败时，页面不做跳转，直接显示内容
+            });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -76,54 +92,5 @@
         <p>关注TG频道: <a href="https://t.me/netgoldstar" target="_blank" rel="noopener noreferrer">https://t.me/netgoldstar</a></p>
         <p>Email: <a href="mailto:netgoldstar@gmail.com">netgoldstar@gmail.com</a></p>
     </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const CHECK_FLAG = "user_region_checked"; // 标记 key
-            const NON_CN_PAGE = "https://www.netgoldstar.com";
-
-            // 先检查 localStorage 里是否已经保存了状态，避免重复请求
-            let storedRegion = localStorage.getItem(CHECK_FLAG);
-
-            if (storedRegion === "CN") {
-                console.log("用户已识别为中国区，停止检测。");
-                return; // 直接返回，不请求 API
-            }
-
-            if (storedRegion === "NON_CN") {
-                console.log("用户已识别为非中国区，直接跳转。");
-                window.location.replace(NON_CN_PAGE);
-                return;
-            }
-
-            // 通过 API 检测用户 IP 归属地
-            let cacheBuster = new Date().getTime(); // 避免缓存
-            let apiUrl = `https://ipwhois.app/json/?_=${cacheBuster}`;
-
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("网络请求失败");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("IP 归属地检测成功:", data);
-
-                    if (data && data.country_code === "CN") {
-                        console.log("用户位于中国，停留在当前页面。");
-                        localStorage.setItem(CHECK_FLAG, "CN"); // 标记为中国区
-                    } else {
-                        console.log("用户不在中国，跳转到 www.netgoldstar.com");
-                        localStorage.setItem(CHECK_FLAG, "NON_CN"); // 标记为非中国区
-                        window.location.replace(NON_CN_PAGE);
-                    }
-                })
-                .catch(error => {
-                    console.error("IP 检测失败，默认用户为中国区:", error);
-                    localStorage.setItem(CHECK_FLAG, "CN"); // 默认中国区，防止无限请求
-                });
-        });
-    </script>
 </body>
 </html>
