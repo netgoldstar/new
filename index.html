@@ -79,24 +79,26 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const CHECK_FLAG = "user_region_checked"; // 存储用户 IP 归属的 key
+            const CHECK_FLAG = "user_region_checked"; // 标记 key
+            const NON_CN_PAGE = "https://www.netgoldstar.com";
+
+            // 先检查 localStorage 里是否已经保存了状态，避免重复请求
             let storedRegion = localStorage.getItem(CHECK_FLAG);
 
             if (storedRegion === "CN") {
-                console.log("用户已识别为中国区，停留在当前页面。");
-                return;
+                console.log("用户已识别为中国区，停止检测。");
+                return; // 直接返回，不请求 API
             }
 
             if (storedRegion === "NON_CN") {
-                console.log("用户已识别为非中国区，跳转到 www.netgoldstar.com");
-                window.location.replace("https://www.netgoldstar.com");
+                console.log("用户已识别为非中国区，直接跳转。");
+                window.location.replace(NON_CN_PAGE);
                 return;
             }
 
-            // 如果 localStorage 里没有数据，则进行 IP 检测
-            console.log("开始 IP 归属地检测...");
-
-            let apiUrl = `https://ipwhois.app/json/?_=${Date.now()}`; // 避免缓存
+            // 通过 API 检测用户 IP 归属地
+            let cacheBuster = new Date().getTime(); // 避免缓存
+            let apiUrl = `https://ipwhois.app/json/?_=${cacheBuster}`;
 
             fetch(apiUrl)
                 .then(response => {
@@ -109,19 +111,17 @@
                     console.log("IP 归属地检测成功:", data);
 
                     if (data && data.country_code === "CN") {
-                        console.log("用户位于中国，存储状态并停留在当前页面。");
-                        localStorage.setItem(CHECK_FLAG, "CN"); // 仅存一次
+                        console.log("用户位于中国，停留在当前页面。");
+                        localStorage.setItem(CHECK_FLAG, "CN"); // 标记为中国区
                     } else {
-                        console.log("用户不在中国，存储状态并跳转。");
-                        localStorage.setItem(CHECK_FLAG, "NON_CN");
-                        setTimeout(() => {
-                            window.location.replace("https://www.netgoldstar.com");
-                        }, 500); // 延迟 500ms，防止某些浏览器 localStorage 尚未写入
+                        console.log("用户不在中国，跳转到 www.netgoldstar.com");
+                        localStorage.setItem(CHECK_FLAG, "NON_CN"); // 标记为非中国区
+                        window.location.replace(NON_CN_PAGE);
                     }
                 })
                 .catch(error => {
                     console.error("IP 检测失败，默认用户为中国区:", error);
-                    localStorage.setItem(CHECK_FLAG, "CN"); // 失败时默认存储
+                    localStorage.setItem(CHECK_FLAG, "CN"); // 默认中国区，防止无限请求
                 });
         });
     </script>
