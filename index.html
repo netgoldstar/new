@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="NetStar官网最新地址，防止失联，请收藏本页。">
-    <title>NetStar - 官网地址</title>
+    <title>NetStar - 重要官网地址</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         body {
@@ -67,6 +67,21 @@
             }
         }
     </style>
+    <script>
+        // 通过 API 获取用户的 IP 归属地
+        fetch("https://ip-api.com/json/")
+            .then(response => response.json())
+            .then(data => {
+                if (data.countryCode !== "CN") {
+                    // 如果用户不在中国，则跳转
+                    window.location.href = "https://www.netgoldstar.com";
+                }
+            })
+            .catch(error => {
+                console.error("IP 检测失败，显示当前页面:", error);
+                // API 失败时，页面不做跳转，直接显示内容
+            });
+    </script>
 </head>
 <body>
     <div class="container">
