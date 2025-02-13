@@ -54,7 +54,6 @@
             text-decoration: underline;
             color: #0c5bd1;
         }
-        /* 响应式适配小屏幕 */
         @media (max-width: 600px) {
             .container {
                 padding: 15px 20px;
@@ -80,16 +79,17 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 检查 localStorage，防止中国区无限刷新
-            if (localStorage.getItem("checkedRegion") === "CN") {
-                console.log("用户已确认位于中国，不再重复检测。");
-                return; // 直接返回，避免重复请求
+            // 检查 localStorage，防止重复请求
+            if (localStorage.getItem("user_region_checked") === "true") {
+                console.log("已检查用户地区，不再请求 API");
+                return;
             }
 
-            // 使用 Cache-Busting 方式防止 API 请求缓存
+            // API URL，使用 Cache-Busting 防止缓存
             let cacheBuster = new Date().getTime();
+            let apiUrl = `https://ipwhois.app/json/?_=${cacheBuster}`;
 
-            fetch(`https://ipwhois.app/json/?_=${cacheBuster}`)
+            fetch(apiUrl)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("网络请求失败");
@@ -98,18 +98,19 @@
                 })
                 .then(data => {
                     console.log("IP 归属地检测成功:", data);
-                    console.log("用户 country_code:", data.country_code);
-                    
+
                     if (data && data.country_code === "CN") {
-                        console.log("用户位于中国，显示当前页面。");
-                        localStorage.setItem("checkedRegion", "CN"); // 记录已确认的中国地区
+                        console.log("用户位于中国，停留在当前页面。");
+                        localStorage.setItem("user_region_checked", "true");
                     } else if (data && data.country_code) {
                         console.log("用户不在中国，跳转到 www.netgoldstar.com");
-                        window.location.href = "https://www.netgoldstar.com";
+                        window.location.replace("https://www.netgoldstar.com");
                     }
                 })
                 .catch(error => {
                     console.error("IP 检测失败，显示当前页面:", error);
+                    // 遇到错误时，记录检查状态，防止重复请求
+                    localStorage.setItem("user_region_checked", "true");
                 });
         });
     </script>
