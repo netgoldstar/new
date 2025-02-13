@@ -69,17 +69,20 @@
     </style>
     <script>
         // 通过 API 获取用户的 IP 归属地
-        fetch("http://ip-api.com/json/")
+        fetch("https://ipwho.is/")
             .then(response => response.json())
             .then(data => {
-                if (data.countryCode !== "CN") {
-                    // 如果用户不在中国，则跳转
+                console.log("IP 地址归属信息:", data); // 调试用，输出 API 返回的数据
+                if (data.success && data.country_code !== "CN") {
+                    console.log("用户不在中国，跳转至官网");
                     window.location.href = "https://www.netgoldstar.com";
+                } else {
+                    console.log("用户在中国或检测失败，保持当前页面");
                 }
             })
             .catch(error => {
-                console.error("IP 检测失败，显示当前页面:", error);
-                // API 失败时，页面不做跳转，直接显示内容
+                console.error("IP 归属地检测失败:", error);
+                // API 失败时，页面不做跳转，继续显示
             });
     </script>
 </head>
